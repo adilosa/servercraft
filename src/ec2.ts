@@ -1,7 +1,7 @@
 import { EC2 } from "aws-sdk";
 import { InstanceId } from "aws-sdk/clients/ec2";
 
-const POLLING_RATE = 5000;
+const POLLING_RATE = 1000;
 
 export class EC2Client {
   ec2: AWS.EC2;
