@@ -32,13 +32,7 @@ export class PausingProxy {
         clearTimeout(this.inactivityTimeout);
         this.inactivityTimeout = null;
       }
-      if (count > 0) {
-        try {
-          await this.ec2Instance.resume();
-        } catch (e) {
-          console.log("Error resuming proxy", e);
-        }
-      } else {
+      if (count <= 0) {
         console.log("Scheduling instance shutdown");
         this.inactivityTimeout = setTimeout(async () => {
           this.inactivityTimeout = null;
