@@ -1,8 +1,7 @@
-import EventEmitter from "events";
 import net from "net";
 import { EC2Client } from "./ec2";
 
-export class PausingProxy extends EventEmitter {
+export class PausingProxy {
   paused: boolean;
   ec2Instance: EC2Client;
   port: number;
@@ -17,7 +16,6 @@ export class PausingProxy extends EventEmitter {
     inactiveShutdownMillis = 900000,
     clientTimeout = 12000
   ) {
-    super();
     this.paused = true;
     this.ec2Instance = ec2Instance;
     this.port = port;
@@ -36,7 +34,7 @@ export class PausingProxy extends EventEmitter {
       }
       if (count > 0) {
         try {
-          await this.resume();
+          await this.ec2Instance.resume();
         } catch (e) {
           console.log("Error resuming proxy", e);
         }
@@ -45,37 +43,11 @@ export class PausingProxy extends EventEmitter {
         this.inactivityTimeout = setTimeout(async () => {
           this.inactivityTimeout = null;
           try {
-            await this.pause();
+            await this.ec2Instance.hibernate();
           } catch (e) {
             console.log("Error pausing proxy", e);
           }
         }, this.inactiveShutdownMillis ?? 900000);
-      }
-    });
-  }
-
-  async pause() {
-    console.log("Pausing proxy");
-    this.paused = true;
-    await this.ec2Instance.stop();
-    this.emit("paused");
-  }
-
-  async resume() {
-    console.log("Resuming proxy");
-    await this.ec2Instance.start();
-    this.paused = false;
-    this.emit("resumed");
-  }
-
-  async _resumedPromise() {
-    return new Promise(resolve => {
-      if (!this.paused) {
-        resolve();
-      } else {
-        this.once("resumed", () => {
-          resolve();
-        });
       }
     });
   }
@@ -86,7 +58,7 @@ export class PausingProxy extends EventEmitter {
     this._checkConnections();
 
     try {
-      await this._resumedPromise();
+      await this.ec2Instance.resume();
 
       const serverSocket = net.connect({
         host: await this.ec2Instance.ipAddress(),

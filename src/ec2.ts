@@ -12,13 +12,17 @@ export class EC2Client {
     this.instanceId = instanceId;
   }
 
-  async start() {
+  async resume() {
     if (!(await this._checkIsRunning())) {
       console.log("Starting instance");
       const start = new Date().getTime();
-      await this.ec2
-        .startInstances({ InstanceIds: [this.instanceId] })
-        .promise();
+      try {
+        await this.ec2
+          .startInstances({ InstanceIds: [this.instanceId] })
+          .promise();
+      } catch (e) {
+        console.log("Error starting instance", e);
+      }
       await this._waitForRunningState();
 
       const elapsedSec = (new Date().getTime() - start) / 1000;
@@ -26,7 +30,7 @@ export class EC2Client {
     }
   }
 
-  async stop() {
+  async hibernate() {
     console.log("Requesting stop of instance");
     return this.ec2
       .stopInstances({ InstanceIds: [this.instanceId], Hibernate: true })
