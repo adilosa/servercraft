@@ -28,7 +28,7 @@ export class EC2Client {
       const elapsedSec = (new Date().getTime() - start) / 1000;
       console.log(`Instance running after ${elapsedSec}s. Waiting for game server...`);
 
-      await this.sleep(10000);
+      await this.sleep(3000);
       console.log("Game server should be ready now");
     }
   }
