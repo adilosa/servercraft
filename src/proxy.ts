@@ -17,6 +17,6 @@ interface Config {
   new PausingProxy(
     new EC2Client(config.instanceId),
     config.port,
-    config.clientTimeout ?? 12000
+    config.clientTimeout ?? 120000
   ).listen(config.proxyPort ?? config.port);
 });
