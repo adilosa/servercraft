@@ -80,17 +80,15 @@ export class EC2Client {
   }
 
   async _checkIsRunning() {
-    const instanceStatus = (
-      await this.ec2
-        .describeInstanceStatus({
-          IncludeAllInstances: true,
-          InstanceIds: [this.instanceId]
-        })
-        .promise()
-    ).InstanceStatuses?.[0];
     return (
-      instanceStatus.InstanceState?.Name === "running" &&
-      instanceStatus.InstanceStatus?.Status === "ok"
+      (
+        await this.ec2
+          .describeInstanceStatus({
+            IncludeAllInstances: true,
+            InstanceIds: [this.instanceId]
+          })
+          .promise()
+      ).InstanceStatuses?.[0].InstanceState?.Name === "running"
     );
   }
 }
