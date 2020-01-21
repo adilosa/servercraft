@@ -1,9 +1,22 @@
 {
   "name": "servercraft",
   "version": "0.0.2",
-  "main": "proxy.js",
+  "main": "build/proxy.js",
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.606.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.8",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.5",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-config-standard": "^9.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node ."
   }
 }
